@@ -1,5 +1,5 @@
 # Sudoku Puzzle And Solver
-made in Python, GUI with Tkinter
+made in Python, GUI with Tkinter. Requires both sudokusolver.py and sudokusolverGUI.py
 
 The program begins in Setup Mode.
 In Setup Mode, you must click a cell to enter a value.
