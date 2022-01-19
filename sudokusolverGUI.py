@@ -37,8 +37,8 @@ GigaFrame = tk.Frame(bg="black")
 GigaFrame.pack(fill=tk.BOTH, expand=True)
 
 entries = {}
-selected_entry_x = 0
-selected_entry_y = 0
+selected_entry_x = -1
+selected_entry_y = -1
 
 mode_setup = True
 mode_solve = False
@@ -114,28 +114,38 @@ def buttonPressClear():
         mode_play = False
         play_button.configure(text="Play", command=buttonPressPlay)
 
+def identifyErrors(possible_errs):
+    err_present = False
+
+    for err in possible_errs:
+        if not isValid(puzzle, puzzle[err[0][0]][err[0][1]], err[0][0], err[0][1]):
+            err[1].configure(fg="red", bg="#FFB1A0")
+            instructions.configure(text="This puzzle is not valid", fg="red")
+            err_present = True
+
+    return err_present
+
 def updateEntries():
     global selected_entry_x, selected_entry_y
-    valid_board = True
     
     selected_entry_x = -1
     selected_entry_y = -1
+    possible_errs = []
 
     for i in range(9):
         for j in range(9):
             entries[(i, j)].configure(fg="black", bg="white")
-            if entries[(i, j)].get() == "":
+            if entries[(i, j)].get() == "" or entries[(i, j)].get() == "0" or not entries[(i, j)].get().isnumeric():
                 entries[(i, j)].delete(0,tk.END)
                 puzzle[i][j] = 0
             else:
                 puzzle[i][j] = int(entries[(i, j)].get())
 
             if not isValid(puzzle, puzzle[i][j], i, j):
-                entries[(i, j)].configure(fg="red", bg="#FFB1A0")
-                instructions.configure(text="This puzzle is not valid", fg="red")
-                valid_board = False
+                possible_errs.append( ((i, j), entries[(i, j)]) )
 
-    return valid_board
+    print(possible_errs)
+    return not identifyErrors(possible_errs)
 
 def buttonPressSolve():
         global mode_setup, mode_solve, mode_play
@@ -187,29 +197,39 @@ def buttonPressCheck():
     solved_board = True
     selected_entry_x = -1
     selected_entry_y = -1
+    possible_errs = []
 
     for i in range(9):
         for j in range(9):
             entries[(i, j)].configure(bg="white")
             if puzzle_original[i][j] == 1:
                 entries[(i, j)].configure(fg="black")
+                entries[(i, j)].delete(0,tk.END)
+                entries[(i, j)].insert(0, str(puzzle[i][j]))
             else:
                 entries[(i, j)].configure(fg="blue")
-               
-            if entries[(i, j)].get() == "":
-                entries[(i, j)].delete(0,tk.END)
-                puzzle[i][j] = 0
-            else:
-                puzzle[i][j] = int(entries[(i, j)].get())
 
-            if not isValid(puzzle, puzzle[i][j], i, j) or puzzle[i][j] == 0:
-                entries[(i, j)].configure(fg="red", bg="#FFB1A0")
-                instructions.configure(text="This puzzle is not solved", fg="red")
-                solved_board = False
+                if entries[(i, j)].get() == "" or entries[(i, j)].get() == "0" or not entries[(i, j)].get().isnumeric():
+                    entries[(i, j)].delete(0,tk.END)
+                    puzzle[i][j] = 0
+                else:
+                    puzzle[i][j] = int(entries[(i, j)].get())
+
+                if puzzle[i][j] == 0:
+                    entries[(i, j)].configure(fg="red", bg="#FFB1A0")
+                    instructions.configure(text="This puzzle is not solved", fg="red")
+                    solved_board = False
+                elif not isValid(puzzle, puzzle[i][j], i, j):
+                    possible_errs.append( ((i, j), entries[(i, j)]) )
+    
+    if identifyErrors(possible_errs):
+        instructions.configure(text="This puzzle is not solved", fg="red")
+        solved_board = False
+
     printPuzzle(puzzle)
 
     if solved_board:
-        instructions.configure(text="This board is solved! Press Clear to reset", fg="green")
+        instructions.configure(text="This puzzle is solved! Press Clear to reset", fg="green")
         play_button.configure(text="Play", command=buttonPressPlay)
 
 ButtonFrame = tk.Frame(bg="white")
