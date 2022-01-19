@@ -103,7 +103,7 @@ def setOriginalPuzzle():
 def buttonPressClear():
     global mode_setup, mode_solve, mode_play
     if not mode_solve:
-        instructions.configure(text="Fill the board with digits between 1 to 9", fg="blue")
+        instructions.configure(text="Fill the board with digits between 1 and 9", fg="blue")
         for i in range(9):
             for j in range(9):
                 puzzle[i][j] = 0
@@ -144,7 +144,6 @@ def updateEntries():
             if not isValid(puzzle, puzzle[i][j], i, j):
                 possible_errs.append( ((i, j), entries[(i, j)]) )
 
-    print(possible_errs)
     return not identifyErrors(possible_errs)
 
 def buttonPressSolve():
