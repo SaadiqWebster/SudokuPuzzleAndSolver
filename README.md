@@ -4,7 +4,7 @@ requires both sudokusolver.py and sudokusolverGUI.py, but only need to run the g
 
 Begins in Setup Mode.
 In Setup Mode, you must click a cell to enter a value.
-These values will be the base board and cannot be changed while solving. Please only use numbers.
+These values will be the base board and cannot be changed while solving.
 When the board is complete there are two options for solving: Play and Auto-Solve.
 
 Switch to Play Mode by pressing the Play button. 
